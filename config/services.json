@@ -1,0 +1,46 @@
+{
+  "services": [
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "icon": "icons/services/gemini.png",
+      "domains": ["gemini.google.com", "aistudio.google.com", "notebooklm.google.com"],
+      "enabled": true
+    },
+    {
+      "id": "chatgpt",
+      "name": "OpenAI ChatGPT",
+      "icon": "icons/services/chatgpt.png",
+      "domains": ["chatgpt.com", "openai.com", "cdn.oaistatic.com"],
+      "enabled": true
+    },
+    {
+      "id": "claude",
+      "name": "Anthropic Claude",
+      "icon": "icons/services/claude.png",
+      "domains": ["claude.ai", "anthropic.com"],
+      "enabled": true
+    },
+    {
+      "id": "poe",
+      "name": "Quora Poe",
+      "icon": "icons/services/poe.png",
+      "domains": ["poe.com"],
+      "enabled": true
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity AI",
+      "icon": "icons/services/perplexity.png",
+      "domains": ["perplexity.ai"],
+      "enabled": true
+    },
+    {
+      "id": "googleAuth",
+      "name": "Google Auth (Recommended)",
+      "domains": ["accounts.google.com", "ssl.gstatic.com"],
+      "enabled": true,
+      "hidden": false
+    }
+  ]
+}

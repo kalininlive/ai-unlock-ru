@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Project context
+tasks/
+memory/
+todo/
+cloud.md
+
+# Extension
+manifest.json.bak
+*.zip
+
+# Sensitive data
+config/proxies_private.json

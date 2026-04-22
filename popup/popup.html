@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI SERVICE UNBLOCK</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="glass-container">
+    <header>
+      <div class="logo-area">
+        <h1>AI SERVICE <span>UNBLOCK</span></h1>
+      </div>
+      <div class="lang-toggle-wrapper">
+        <button id="lang-toggle" class="glass-button">EN</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="proxy-status glass-panel">
+        <div class="status-header">
+          <span id="label-status" data-i18n="status">Статус:</span>
+          <div id="status-indicator" class="indicator"></div>
+          <span id="status-text" data-i18n="searching">Поиск...</span>
+        </div>
+        <div class="main-toggle">
+          <label class="switch">
+            <input type="checkbox" id="master-switch">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="services-list glass-panel">
+        <h2 id="label-services" data-i18n="services">Сервисы</h2>
+        <div id="services-container">
+          <!-- Dynamic services list -->
+        </div>
+      </div>
+
+      <div class="custom-resource glass-panel">
+        <h2 id="label-add-resource" data-i18n="addResource">Добавить ресурс</h2>
+        <div class="input-group">
+          <input type="text" id="custom-domain" placeholder="example.com" class="glass-input">
+          <button id="add-domain-btn" class="glass-button primary" data-i18n="add" style="width: auto; margin-top: 0;">Добавить</button>
+        </div>
+        <div id="domain-error" class="error-message"></div>
+      </div>
+
+      <div class="proxy-settings glass-panel">
+        <h2 id="label-settings" data-i18n="settings">Настройки прокси</h2>
+        <div class="input-group">
+          <input type="text" id="proxy-host" placeholder="Host (e.g. 1.2.3.4)" class="glass-input">
+          <input type="number" id="proxy-port" placeholder="Port" class="glass-input small">
+        </div>
+        <div class="input-group">
+          <input type="text" id="proxy-user" placeholder="User (optional)" class="glass-input">
+          <input type="password" id="proxy-pass" placeholder="Pass (optional)" class="glass-input">
+        </div>
+        <button id="save-proxy" class="glass-button primary" data-i18n="save">Сохранить</button>
+      </div>
+    </main>
+
+    <footer>
+      <p id="footer-text" data-i18n="footer">AI SERVICE UNBLOCK v1.0.0</p>
+    </footer>
+  </div>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
