@@ -36,6 +36,13 @@
       "enabled": true
     },
     {
+      "id": "youtube",
+      "name": "YouTube",
+      "icon": "icons/services/youtube.png",
+      "domains": ["youtube.com", "youtu.be", "googlevideo.com", "ytimg.com"],
+      "enabled": true
+    },
+    {
       "id": "googleAuth",
       "name": "Google Auth (Recommended)",
       "domains": ["accounts.google.com", "ssl.gstatic.com"],
