@@ -77,11 +77,12 @@ function updateUI(state) {
   }
 
   // Update proxy fields
-  if (state.proxy) {
-    document.getElementById('proxy-host').value = state.proxy.host || '';
-    document.getElementById('proxy-port').value = state.proxy.port || '';
-    document.getElementById('proxy-user').value = state.proxy.user || '';
-    document.getElementById('proxy-pass').value = state.proxy.pass || '';
+  if (state.proxy && state.proxy.host) {
+    let proxyStr = `${state.proxy.host}:${state.proxy.port}`;
+    if (state.proxy.user && state.proxy.pass) {
+      proxyStr += `:${state.proxy.user}:${state.proxy.pass}`;
+    }
+    document.getElementById('proxy-string').value = proxyStr;
   }
 }
 
@@ -143,17 +144,40 @@ function setupEventListeners() {
   });
 
   document.getElementById('save-proxy').addEventListener('click', async () => {
-    const host = document.getElementById('proxy-host').value;
-    const port = document.getElementById('proxy-port').value;
-    const user = document.getElementById('proxy-user').value;
-    const pass = document.getElementById('proxy-pass').value;
+    const proxyStr = document.getElementById('proxy-string').value.trim();
+    const state = await loadState();
 
-    if (!host || !port) {
-      alert(currentLang === 'RU' ? 'Введите хост и порт!' : 'Enter host and port!');
+    if (!proxyStr) {
+      state.proxy = null;
+      await saveState(state);
+      const btn = document.getElementById('save-proxy');
+      const oldText = btn.textContent;
+      btn.textContent = currentLang === 'RU' ? 'Очищено!' : 'Cleared!';
+      setTimeout(() => { btn.textContent = oldText; }, 1500);
       return;
     }
 
-    const state = await loadState();
+    const parts = proxyStr.split(':');
+    let host = '', port = '', user = '', pass = '';
+
+    if (parts.length === 2) {
+      host = parts[0];
+      port = parts[1];
+    } else if (parts.length === 4) {
+      host = parts[0];
+      port = parts[1];
+      user = parts[2];
+      pass = parts[3];
+    } else {
+      alert(currentLang === 'RU' ? 'Неверный формат прокси! Используйте IP:PORT или IP:PORT:USER:PASS' : 'Invalid proxy format! Use IP:PORT or IP:PORT:USER:PASS');
+      return;
+    }
+
+    if (!host || !port || isNaN(parseInt(port))) {
+      alert(currentLang === 'RU' ? 'Неверный формат хоста или порта!' : 'Invalid host or port format!');
+      return;
+    }
+
     state.proxy = { host, port: parseInt(port), user, pass, scheme: 'http' };
     await saveState(state);
     
