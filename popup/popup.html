@@ -13,54 +13,64 @@
         <img src="../icons/off-128.png" class="header-logo">
         <h1>AI SERVICE <span>UNBLOCK</span></h1>
       </div>
-      <div class="lang-toggle-wrapper">
+      <div class="lang-toggle-wrapper" style="display: flex; gap: 8px;">
         <button id="lang-toggle" class="glass-button">EN</button>
+        <button id="settings-toggle" class="glass-button toggle-settings" title="Настройки" style="padding: 6px; display: flex; align-items: center; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
       </div>
     </header>
 
     <main>
-      <div class="proxy-status glass-panel">
-        <div class="status-header">
-          <span id="label-status" data-i18n="status">Статус:</span>
-          <div id="status-indicator" class="indicator"></div>
-          <span id="status-text" data-i18n="searching">Поиск...</span>
+      <div id="main-view" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="proxy-status glass-panel">
+          <div class="status-header">
+            <span id="label-status" data-i18n="status">Статус:</span>
+            <div id="status-indicator" class="indicator"></div>
+            <span id="status-text" data-i18n="searching">Поиск...</span>
+          </div>
+          <div class="main-toggle">
+            <label class="switch">
+              <input type="checkbox" id="master-switch">
+              <span class="slider round"></span>
+            </label>
+          </div>
         </div>
-        <div class="main-toggle">
-          <label class="switch">
-            <input type="checkbox" id="master-switch">
-            <span class="slider round"></span>
-          </label>
+
+        <div class="services-list glass-panel">
+          <h2 id="label-services" data-i18n="services">Сервисы</h2>
+          <div id="services-container">
+            <!-- Dynamic services list -->
+          </div>
+        </div>
+
+        <div class="custom-resource glass-panel">
+          <h2 id="label-add-resource" data-i18n="addResource">Добавить ресурс</h2>
+          <div class="input-group">
+            <input type="text" id="custom-domain" placeholder="example.com" class="glass-input">
+            <button id="add-domain-btn" class="glass-button primary" data-i18n="add" style="width: auto; margin-top: 0;">Добавить</button>
+          </div>
+          <div id="domain-error" class="error-message"></div>
         </div>
       </div>
 
-      <div class="services-list glass-panel">
-        <h2 id="label-services" data-i18n="services">Сервисы</h2>
-        <div id="services-container">
-          <!-- Dynamic services list -->
+      <div id="settings-view" class="proxy-settings glass-panel" style="display: none; flex-direction: column; gap: 12px; margin-bottom: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 id="label-settings" data-i18n="settings" style="margin: 0;">Настройки прокси</h2>
+          <button id="close-settings" class="delete-btn" title="Close" style="color: white;">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
-      </div>
-
-      <div class="custom-resource glass-panel">
-        <h2 id="label-add-resource" data-i18n="addResource">Добавить ресурс</h2>
-        <div class="input-group">
-          <input type="text" id="custom-domain" placeholder="example.com" class="glass-input">
-          <button id="add-domain-btn" class="glass-button primary" data-i18n="add" style="width: auto; margin-top: 0;">Добавить</button>
-        </div>
-        <div id="domain-error" class="error-message"></div>
-      </div>
-
-      <div class="proxy-settings glass-panel">
-        <h2 id="label-settings" data-i18n="settings">Настройки прокси</h2>
-        <div class="password-wrapper">
+        <div class="password-wrapper" style="margin-bottom: 0;">
           <input type="password" id="proxy-string" placeholder="IP:PORT или IP:PORT:USER:PASS" class="glass-input">
           <button id="toggle-password" class="toggle-password">
             <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </div>
-        <button id="save-proxy" class="glass-button primary" data-i18n="save">Сохранить</button>
-        <div class="ref-link-wrapper">
-          <a href="https://proxy6.net/e/79776" target="_blank" class="ref-link">Купить прокси (скидка 5%)</a>
+        <div class="ref-link-wrapper" style="margin: 0; text-align: left;">
+          <a href="https://proxy6.net/e/79776" target="_blank" class="ref-link" style="font-size: 11px;">Купить ipv4 прокси скидка 5%</a>
         </div>
+        <button id="save-proxy" class="glass-button primary" data-i18n="addProxy" style="margin-top: 0;">Добавить</button>
       </div>
     </main>
 

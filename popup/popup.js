@@ -9,6 +9,7 @@ const i18n = {
     services: 'Сервисы',
     settings: 'Настройки прокси',
     save: 'Сохранить',
+    addProxy: 'Добавить',
     footer: 'AI SERVICE UNBLOCK v1.1.3',
     addResource: 'Добавить ресурс',
     add: 'Добавить',
@@ -22,6 +23,7 @@ const i18n = {
     services: 'Services',
     settings: 'Proxy Settings',
     save: 'Save',
+    addProxy: 'Add',
     footer: 'AI SERVICE UNBLOCK v1.1.3',
     addResource: 'Add Resource',
     add: 'Add',
@@ -172,6 +174,16 @@ function renderServiceItem({ id, name, icon, enabled, onChange, onDelete }) {
 }
 
 function setupEventListeners() {
+  document.getElementById('settings-toggle').addEventListener('click', () => {
+    document.getElementById('main-view').style.display = 'none';
+    document.getElementById('settings-view').style.display = 'flex';
+  });
+
+  document.getElementById('close-settings').addEventListener('click', () => {
+    document.getElementById('settings-view').style.display = 'none';
+    document.getElementById('main-view').style.display = 'flex';
+  });
+
   document.getElementById('lang-toggle').addEventListener('click', async () => {
     currentLang = currentLang === 'RU' ? 'EN' : 'RU';
     const state = await loadState();
