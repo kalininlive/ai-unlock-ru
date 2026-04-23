@@ -38,17 +38,16 @@
       "enabled": true
     },
     {
-      "id": "chatgpt",
+      "id": "openai",
       "name": "OpenAI ChatGPT",
-      "icon": "icons/services/chatgpt.png",
-      "domains": ["chatgpt.com", "openai.com", "cdn.oaistatic.com"],
-      "enabled": true
-    },
-    {
-      "id": "openai-platform",
-      "name": "OpenAI Platform",
       "icon": "icons/services/openai.png",
-      "domains": ["platform.openai.com"],
+      "domains": [
+        "chatgpt.com", 
+        "openai.com", 
+        "cdn.oaistatic.com", 
+        "platform.openai.com", 
+        "sora.chatgpt.com"
+      ],
       "enabled": true
     },
     {
@@ -56,13 +55,6 @@
       "name": "Grok",
       "icon": "icons/services/grok.png",
       "domains": ["grok.com"],
-      "enabled": true
-    },
-    {
-      "id": "sora",
-      "name": "Sora",
-      "icon": "icons/services/sora.png",
-      "domains": ["sora.chatgpt.com"],
       "enabled": true
     },
     {

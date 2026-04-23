@@ -9,7 +9,7 @@ const i18n = {
     services: 'Сервисы',
     settings: 'Настройки прокси',
     save: 'Сохранить',
-    footer: 'AI SERVICE UNBLOCK v1.1.0',
+    footer: 'AI SERVICE UNBLOCK v1.1.1',
     addResource: 'Добавить ресурс',
     add: 'Добавить',
     bannedResource: '🔒 Доступ к ресурсу запрещён',
@@ -22,7 +22,7 @@ const i18n = {
     services: 'Services',
     settings: 'Proxy Settings',
     save: 'Save',
-    footer: 'AI SERVICE UNBLOCK v1.1.0',
+    footer: 'AI SERVICE UNBLOCK v1.1.1',
     addResource: 'Add Resource',
     add: 'Add',
     bannedResource: '🔒 Access to resource is prohibited',
@@ -134,6 +134,12 @@ async function loadServices() {
                 const st = await loadState();
                 st.customDomains[index].enabled = checked;
                 await saveState(st);
+            },
+            onDelete: async () => {
+                const st = await loadState();
+                st.customDomains.splice(index, 1);
+                await saveState(st);
+                loadServices(); // Refresh list
             }
         });
         container.appendChild(item);
@@ -141,24 +147,31 @@ async function loadServices() {
   }
 }
 
-function renderServiceItem({ id, name, icon, enabled, onChange }) {
+function renderServiceItem({ id, name, icon, enabled, onChange, onDelete }) {
     const item = document.createElement('div');
     item.className = 'service-item';
     
     const iconHtml = icon ? `<img src="${icon}" class="service-icon" onerror="this.src='../icons/off-16.png'">` : '';
+    const deleteBtnHtml = onDelete ? `<button class="delete-btn" title="Delete">×</button>` : '';
     
     item.innerHTML = `
       <div class="service-info">
         ${iconHtml}
         <span class="service-name">${name}</span>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="${id}" ${enabled ? 'checked' : ''}>
-        <span class="slider round"></span>
-      </label>
+      <div class="service-actions">
+        ${deleteBtnHtml}
+        <label class="switch">
+          <input type="checkbox" id="${id}" ${enabled ? 'checked' : ''}>
+          <span class="slider round"></span>
+        </label>
+      </div>
     `;
     
     item.querySelector('input').addEventListener('change', (e) => onChange(e.target.checked));
+    if (onDelete) {
+        item.querySelector('.delete-btn').addEventListener('click', () => onDelete());
+    }
     return item;
 }
 
