@@ -33,7 +33,9 @@
         "youtube.com",
         "youtu.be",
         "googlevideo.com",
-        "ytimg.com"
+        "ytimg.com",
+        "accounts.google.com",
+        "ssl.gstatic.com"
       ],
       "enabled": true
     },
@@ -77,13 +79,6 @@
       "icon": "icons/services/perplexity.png",
       "domains": ["perplexity.ai"],
       "enabled": true
-    },
-    {
-      "id": "googleAuth",
-      "name": "Google Auth (Recommended)",
-      "domains": ["accounts.google.com", "ssl.gstatic.com"],
-      "enabled": true,
-      "hidden": false
     }
   ]
 }

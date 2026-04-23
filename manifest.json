@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI SERVICE UNBLOCK",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Premium AI Unblocker. Routing specific AI domains through your proxy with Glassmorphism UI.",
   "author": "Antigravity & Aimagine-life",
   "minimum_chrome_version": "120",
