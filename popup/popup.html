@@ -51,8 +51,11 @@
 
       <div class="proxy-settings glass-panel">
         <h2 id="label-settings" data-i18n="settings">Настройки прокси</h2>
-        <div class="input-group">
-          <input type="text" id="proxy-string" placeholder="IP:PORT или IP:PORT:USER:PASS" class="glass-input" style="width: 100%;">
+        <div class="password-wrapper">
+          <input type="password" id="proxy-string" placeholder="IP:PORT или IP:PORT:USER:PASS" class="glass-input">
+          <button id="toggle-password" class="toggle-password">
+            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
         </div>
         <button id="save-proxy" class="glass-button primary" data-i18n="save">Сохранить</button>
         <div class="ref-link-wrapper">
@@ -62,7 +65,7 @@
     </main>
 
     <footer>
-      <p id="footer-text" data-i18n="footer">AI SERVICE UNBLOCK v1.1.2</p>
+      <p id="footer-text" data-i18n="footer">AI SERVICE UNBLOCK v1.1.3</p>
       <div class="footer-contacts">
         <a href="https://t.me/websansay" target="_blank">Разработка WebSansay</a> | 
         <a href="https://t.me/+YboUl5GE0NZkNzNi" target="_blank">TG канал</a>
