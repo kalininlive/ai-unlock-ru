@@ -1,10 +1,40 @@
 {
   "services": [
     {
-      "id": "gemini",
-      "name": "Google Gemini",
-      "icon": "icons/services/gemini.png",
-      "domains": ["gemini.google.com", "aistudio.google.com", "notebooklm.google.com"],
+      "id": "google",
+      "name": "Google",
+      "icon": "icons/services/google.png",
+      "domains": [
+        "google.com",
+        "aistudio.google.com",
+        "gemini.google.com",
+        "cloud.google.com",
+        "notebooklm.google",
+        "ads.google.com",
+        "admanager.google.com",
+        "marketingplatform.google.com",
+        "tagmanager.google.com",
+        "merchants.google.com",
+        "analytics.google.com",
+        "lookerstudio.google.com",
+        "trends.google.com",
+        "firebase.google.com",
+        "developer.android.com",
+        "developer.chrome.com",
+        "developers.google.com",
+        "workspace.google.com",
+        "mail.google.com",
+        "docs.google.com",
+        "drive.google.com",
+        "meet.google.com",
+        "maps.google.com",
+        "news.google.com",
+        "about.google",
+        "youtube.com",
+        "youtu.be",
+        "googlevideo.com",
+        "ytimg.com"
+      ],
       "enabled": true
     },
     {
@@ -12,6 +42,27 @@
       "name": "OpenAI ChatGPT",
       "icon": "icons/services/chatgpt.png",
       "domains": ["chatgpt.com", "openai.com", "cdn.oaistatic.com"],
+      "enabled": true
+    },
+    {
+      "id": "openai-platform",
+      "name": "OpenAI Platform",
+      "icon": "icons/services/openai.png",
+      "domains": ["platform.openai.com"],
+      "enabled": true
+    },
+    {
+      "id": "grok",
+      "name": "Grok",
+      "icon": "icons/services/grok.png",
+      "domains": ["grok.com"],
+      "enabled": true
+    },
+    {
+      "id": "sora",
+      "name": "Sora",
+      "icon": "icons/services/sora.png",
+      "domains": ["sora.chatgpt.com"],
       "enabled": true
     },
     {
@@ -33,13 +84,6 @@
       "name": "Perplexity AI",
       "icon": "icons/services/perplexity.png",
       "domains": ["perplexity.ai"],
-      "enabled": true
-    },
-    {
-      "id": "youtube",
-      "name": "YouTube",
-      "icon": "icons/services/youtube.png",
-      "domains": ["youtube.com", "youtu.be", "googlevideo.com", "ytimg.com"],
       "enabled": true
     },
     {

@@ -9,7 +9,7 @@ const i18n = {
     services: 'Сервисы',
     settings: 'Настройки прокси',
     save: 'Сохранить',
-    footer: 'AI SERVICE UNBLOCK v1.0.0',
+    footer: 'AI SERVICE UNBLOCK v1.1.0',
     addResource: 'Добавить ресурс',
     add: 'Добавить',
     bannedResource: '🔒 Доступ к ресурсу запрещён',
@@ -22,7 +22,7 @@ const i18n = {
     services: 'Services',
     settings: 'Proxy Settings',
     save: 'Save',
-    footer: 'AI SERVICE UNBLOCK v1.0.0',
+    footer: 'AI SERVICE UNBLOCK v1.1.0',
     addResource: 'Add Resource',
     add: 'Add',
     bannedResource: '🔒 Access to resource is prohibited',
@@ -68,21 +68,27 @@ function updateUI(state) {
   const indicator = document.getElementById('status-indicator');
   const statusText = document.getElementById('status-text');
   
-  if (state.enabled) {
+  indicator.className = 'indicator'; // reset
+  
+  if (!state.enabled) {
+    indicator.classList.add('idle');
+    statusText.textContent = texts.inactive;
+  } else if (state.proxy && state.proxy.host) {
     indicator.classList.add('active');
     statusText.textContent = texts.active;
   } else {
-    indicator.classList.remove('active');
+    indicator.classList.add('error');
     statusText.textContent = texts.inactive;
   }
 
-  // Update proxy fields
+  // Update proxy fields with masking
   if (state.proxy && state.proxy.host) {
     let proxyStr = `${state.proxy.host}:${state.proxy.port}`;
     if (state.proxy.user && state.proxy.pass) {
-      proxyStr += `:${state.proxy.user}:${state.proxy.pass}`;
+      proxyStr += `:${state.proxy.user}:****`; // Mask password
     }
     document.getElementById('proxy-string').value = proxyStr;
+    document.getElementById('proxy-string').dataset.fullValue = `${state.proxy.host}:${state.proxy.port}${state.proxy.user ? ':' + state.proxy.user + ':' + state.proxy.pass : ''}`;
   }
 }
 
@@ -94,37 +100,66 @@ async function loadServices() {
   const container = document.getElementById('services-container');
   container.innerHTML = '';
 
+  // Render presets
   config.services.forEach(service => {
     if (service.hidden) return;
     
-    // Ensure service exists in state
     if (!state.presets[service.id]) {
       state.presets[service.id] = { enabled: service.enabled, domains: service.domains };
     }
 
+    const item = renderServiceItem({
+        id: `svc-${service.id}`,
+        name: service.name,
+        icon: `../${service.icon}`,
+        enabled: state.presets[service.id].enabled,
+        onChange: async (checked) => {
+            const st = await loadState();
+            st.presets[service.id].enabled = checked;
+            await saveState(st);
+        }
+    });
+    container.appendChild(item);
+  });
+
+  // Render custom domains
+  if (state.customDomains && state.customDomains.length > 0) {
+    state.customDomains.forEach((domain, index) => {
+        const item = renderServiceItem({
+            id: `custom-${index}`,
+            name: domain.value,
+            icon: `https://www.google.com/s2/favicons?domain=${domain.value}&sz=32`,
+            enabled: domain.enabled,
+            onChange: async (checked) => {
+                const st = await loadState();
+                st.customDomains[index].enabled = checked;
+                await saveState(st);
+            }
+        });
+        container.appendChild(item);
+    });
+  }
+}
+
+function renderServiceItem({ id, name, icon, enabled, onChange }) {
     const item = document.createElement('div');
     item.className = 'service-item';
     
-    const iconHtml = service.icon ? `<img src="../${service.icon}" class="service-icon">` : '';
+    const iconHtml = icon ? `<img src="${icon}" class="service-icon" onerror="this.src='../icons/off-16.png'">` : '';
     
     item.innerHTML = `
       <div class="service-info">
         ${iconHtml}
-        <span class="service-name">${service.name}</span>
+        <span class="service-name">${name}</span>
       </div>
       <label class="switch">
-        <input type="checkbox" id="svc-${service.id}" ${state.presets[service.id].enabled ? 'checked' : ''}>
+        <input type="checkbox" id="${id}" ${enabled ? 'checked' : ''}>
         <span class="slider round"></span>
       </label>
     `;
-    container.appendChild(item);
-
-    document.getElementById(`svc-${service.id}`).addEventListener('change', async (e) => {
-      const st = await loadState();
-      st.presets[service.id].enabled = e.target.checked;
-      await saveState(st);
-    });
-  });
+    
+    item.querySelector('input').addEventListener('change', (e) => onChange(e.target.checked));
+    return item;
 }
 
 function setupEventListeners() {
@@ -187,6 +222,24 @@ function setupEventListeners() {
     setTimeout(() => { btn.textContent = oldText; }, 1500);
   });
 
+  const proxyInput = document.getElementById('proxy-string');
+  proxyInput.addEventListener('focus', () => {
+    if (proxyInput.dataset.fullValue) {
+        proxyInput.value = proxyInput.dataset.fullValue;
+    }
+  });
+
+  proxyInput.addEventListener('blur', async () => {
+    const state = await loadState();
+    if (state.proxy && state.proxy.host) {
+        let proxyStr = `${state.proxy.host}:${state.proxy.port}`;
+        if (state.proxy.user && state.proxy.pass) {
+            proxyStr += `:${state.proxy.user}:****`;
+        }
+        proxyInput.value = proxyStr;
+    }
+  });
+
   document.getElementById('add-domain-btn').addEventListener('click', async () => {
     const input = document.getElementById('custom-domain');
     const domain = input.value.trim();
@@ -209,11 +262,12 @@ function setupEventListeners() {
     if (!state.customDomains) state.customDomains = [];
     
     if (!state.customDomains.find(d => d.value === domain)) {
-        state.customDomains.push({ value: domain, mode: 'suffix' });
+        state.customDomains.push({ value: domain, mode: 'suffix', enabled: true });
         await saveState(state);
     }
     
     input.value = '';
+    loadServices(); // Refresh list
     const oldText = document.getElementById('add-domain-btn').textContent;
     document.getElementById('add-domain-btn').textContent = currentLang === 'RU' ? 'ОК' : 'OK';
     setTimeout(() => { document.getElementById('add-domain-btn').textContent = oldText; }, 1500);
