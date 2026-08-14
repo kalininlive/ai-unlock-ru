@@ -82,7 +82,7 @@
           </button>
         </div>
         <p id="label-ru-desc" data-i18n="ruDesc" style="font-size: 11px; opacity: 0.75; margin: 0; line-height: 1.4;">
-          Российские сайты всегда открываются напрямую, в обход прокси/VPN — даже когда основной прокси включён.
+          Эти сайты никогда не идут через ваш основной (зарубежный) прокси. Без своего RU-прокси — просто напрямую. Со своим RU-прокси — через него, чтобы сайт видел российский IP.
         </p>
 
         <div class="service-item">
@@ -98,6 +98,17 @@
         </div>
 
         <div id="ru-categories-container"></div>
+
+        <div class="ru-proxy-block">
+          <h2 id="label-ru-proxy" data-i18n="ruProxyLabel" style="font-size: 13px;">Российский прокси (опционально)</h2>
+          <div class="password-wrapper" style="margin-bottom: 0;">
+            <input type="password" id="ru-proxy-string" placeholder="IP:PORT или IP:PORT:USER:PASS" class="glass-input">
+            <button id="ru-toggle-password" class="toggle-password">
+              <svg id="ru-eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+          <button id="save-ru-proxy" class="glass-button primary" data-i18n="addProxy" style="margin-top: 8px;">Добавить</button>
+        </div>
 
         <div class="custom-resource" style="padding: 0; background: none; border: none; box-shadow: none;">
           <h2 id="label-ru-add" data-i18n="ruAdd" style="font-size: 13px;">Добавить свой RU-сайт</h2>

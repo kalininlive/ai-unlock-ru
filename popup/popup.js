@@ -11,15 +11,16 @@ const i18n = {
     settings: 'Настройки прокси',
     save: 'Сохранить',
     addProxy: 'Добавить',
-    footer: 'AI SERVICE UNBLOCK v1.2.0',
+    footer: 'AI SERVICE UNBLOCK v1.2.1',
     addResource: 'Добавить ресурс',
     add: 'Добавить',
     bannedResource: '🔒 Доступ к ресурсу запрещён',
     ruTitle: '🇷🇺 RU-сервисы',
-    ruDesc: 'Российские сайты всегда открываются напрямую, в обход прокси/VPN — даже когда основной прокси включён.',
+    ruDesc: 'Эти сайты никогда не идут через ваш основной (зарубежный) прокси. Без своего RU-прокси — просто напрямую. Со своим RU-прокси — через него, чтобы сайт видел российский IP.',
     ruMaster: 'Обход для RU-сайтов',
     ruAdd: 'Добавить свой RU-сайт',
     ruDuplicate: 'Этот домен уже в списке',
+    ruProxyLabel: 'Российский прокси (опционально)',
   },
   EN: {
     status: 'Status:',
@@ -30,15 +31,16 @@ const i18n = {
     settings: 'Proxy Settings',
     save: 'Save',
     addProxy: 'Add',
-    footer: 'AI SERVICE UNBLOCK v1.2.0',
+    footer: 'AI SERVICE UNBLOCK v1.2.1',
     addResource: 'Add Resource',
     add: 'Add',
     bannedResource: '🔒 Access to resource is prohibited',
     ruTitle: '🇷🇺 RU Services',
-    ruDesc: 'Russian sites always open directly, bypassing the proxy/VPN — even while the main proxy is enabled.',
+    ruDesc: 'These sites never go through your main (foreign) proxy. Without your own RU proxy — just direct. With one set — routed through it, so the site sees a Russian IP.',
     ruMaster: 'Bypass for RU sites',
     ruAdd: 'Add your own RU site',
     ruDuplicate: 'This domain is already in the list',
+    ruProxyLabel: 'Russian proxy (optional)',
   }
 };
 
@@ -84,10 +86,11 @@ function updateUI(state) {
   
   indicator.className = 'indicator'; // reset
   
+  const hasAnyProxy = (state.proxy && state.proxy.host) || (state.ruProxy && state.ruProxy.host);
   if (!state.enabled) {
     indicator.classList.add('idle');
     statusText.textContent = texts.inactive;
-  } else if (state.proxy && state.proxy.host) {
+  } else if (hasAnyProxy) {
     indicator.classList.add('active');
     statusText.textContent = texts.active;
   } else {
@@ -99,6 +102,10 @@ function updateUI(state) {
   if (state.proxy && state.proxy.host) {
     const proxyStr = `${state.proxy.host}:${state.proxy.port}${state.proxy.user ? ':' + state.proxy.user + ':' + state.proxy.pass : ''}`;
     document.getElementById('proxy-string').value = proxyStr;
+  }
+  if (state.ruProxy && state.ruProxy.host) {
+    const ruProxyStr = `${state.ruProxy.host}:${state.ruProxy.port}${state.ruProxy.user ? ':' + state.ruProxy.user + ':' + state.ruProxy.pass : ''}`;
+    document.getElementById('ru-proxy-string').value = ruProxyStr;
   }
 }
 
@@ -242,6 +249,80 @@ function showView(name) {
   document.getElementById('ru-view').style.display = name === 'ru' ? 'flex' : 'none';
 }
 
+// Parses "IP:PORT" or "IP:PORT:USER:PASS" into a proxy object, or throws a
+// user-facing message string. Empty input means "clear the proxy" (null).
+function parseProxyString(raw) {
+  const proxyStr = raw.trim();
+  if (!proxyStr) return null;
+
+  const parts = proxyStr.split(':');
+  let host = '', port = '', user = '', pass = '';
+
+  if (parts.length === 2) {
+    [host, port] = parts;
+  } else if (parts.length === 4) {
+    [host, port, user, pass] = parts;
+  } else {
+    throw currentLang === 'RU'
+      ? 'Неверный формат прокси! Используйте IP:PORT или IP:PORT:USER:PASS'
+      : 'Invalid proxy format! Use IP:PORT or IP:PORT:USER:PASS';
+  }
+
+  if (!host || !port || isNaN(parseInt(port))) {
+    throw currentLang === 'RU' ? 'Неверный формат хоста или порта!' : 'Invalid host or port format!';
+  }
+
+  return { host, port: parseInt(port), user, pass, scheme: 'http' };
+}
+
+function bindProxySave({ inputId, btnId, setProxy }) {
+  document.getElementById(btnId).addEventListener('click', async () => {
+    const state = await loadState();
+    const btn = document.getElementById(btnId);
+    const oldText = btn.textContent;
+
+    let proxy;
+    try {
+      proxy = parseProxyString(document.getElementById(inputId).value);
+    } catch (message) {
+      alert(message);
+      return;
+    }
+
+    setProxy(state, proxy);
+    await saveState(state);
+    updateUI(state);
+
+    btn.textContent = proxy
+      ? (currentLang === 'RU' ? 'Сохранено!' : 'Saved!')
+      : (currentLang === 'RU' ? 'Очищено!' : 'Cleared!');
+    setTimeout(() => { btn.textContent = oldText; }, 1500);
+  });
+}
+
+function bindPasswordToggle(inputId, btnId, iconId) {
+  const input = document.getElementById(inputId);
+  const toggleBtn = document.getElementById(btnId);
+
+  toggleBtn.addEventListener('click', () => {
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+
+    const eyeIcon = `
+      <svg id="${iconId}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>`;
+    const eyeOffIcon = `
+      <svg id="${iconId}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>`;
+
+    toggleBtn.innerHTML = isPassword ? eyeOffIcon : eyeIcon;
+  });
+}
+
 function setupEventListeners() {
   document.getElementById('settings-toggle').addEventListener('click', () => showView('settings'));
   document.getElementById('close-settings').addEventListener('click', () => showView('main'));
@@ -305,71 +386,20 @@ function setupEventListeners() {
     updateUI(state);
   });
 
-  document.getElementById('save-proxy').addEventListener('click', async () => {
-    const proxyStr = document.getElementById('proxy-string').value.trim();
-    const state = await loadState();
-
-    if (!proxyStr) {
-      state.proxy = null;
-      await saveState(state);
-      const btn = document.getElementById('save-proxy');
-      const oldText = btn.textContent;
-      btn.textContent = currentLang === 'RU' ? 'Очищено!' : 'Cleared!';
-      setTimeout(() => { btn.textContent = oldText; }, 1500);
-      return;
-    }
-
-    const parts = proxyStr.split(':');
-    let host = '', port = '', user = '', pass = '';
-
-    if (parts.length === 2) {
-      host = parts[0];
-      port = parts[1];
-    } else if (parts.length === 4) {
-      host = parts[0];
-      port = parts[1];
-      user = parts[2];
-      pass = parts[3];
-    } else {
-      alert(currentLang === 'RU' ? 'Неверный формат прокси! Используйте IP:PORT или IP:PORT:USER:PASS' : 'Invalid proxy format! Use IP:PORT or IP:PORT:USER:PASS');
-      return;
-    }
-
-    if (!host || !port || isNaN(parseInt(port))) {
-      alert(currentLang === 'RU' ? 'Неверный формат хоста или порта!' : 'Invalid host or port format!');
-      return;
-    }
-
-    state.proxy = { host, port: parseInt(port), user, pass, scheme: 'http' };
-    await saveState(state);
-    
-    const btn = document.getElementById('save-proxy');
-    const oldText = btn.textContent;
-    btn.textContent = currentLang === 'RU' ? 'Сохранено!' : 'Saved!';
-    setTimeout(() => { btn.textContent = oldText; }, 1500);
+  bindProxySave({
+    inputId: 'proxy-string',
+    btnId: 'save-proxy',
+    setProxy: (state, proxy) => { state.proxy = proxy; },
   });
 
-  const proxyInput = document.getElementById('proxy-string');
-  const toggleBtn = document.getElementById('toggle-password');
-  
-  toggleBtn.addEventListener('click', () => {
-    const isPassword = proxyInput.type === 'password';
-    proxyInput.type = isPassword ? 'text' : 'password';
-    
-    // Update icon
-    const eyeIcon = `
-      <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-      </svg>`;
-    const eyeOffIcon = `
-      <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-        <line x1="1" y1="1" x2="23" y2="23"></line>
-      </svg>`;
-    
-    toggleBtn.innerHTML = isPassword ? eyeOffIcon : eyeIcon;
+  bindProxySave({
+    inputId: 'ru-proxy-string',
+    btnId: 'save-ru-proxy',
+    setProxy: (state, proxy) => { state.ruProxy = proxy; },
   });
+
+  bindPasswordToggle('proxy-string', 'toggle-password', 'eye-icon');
+  bindPasswordToggle('ru-proxy-string', 'ru-toggle-password', 'ru-eye-icon');
 
   document.getElementById('add-domain-btn').addEventListener('click', async () => {
     const input = document.getElementById('custom-domain');

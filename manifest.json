@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AI SERVICE UNBLOCK",
-  "version": "1.2.0",
-  "description": "Premium AI Unblocker. Routing specific AI domains through your proxy, while keeping Russian services always direct, with Glassmorphism UI.",
+  "version": "1.2.1",
+  "description": "Premium AI Unblocker. Routes AI domains through your foreign proxy while keeping Russian services on a separate RU proxy (or direct), with Glassmorphism UI.",
   "author": "Antigravity & Aimagine-life",
   "minimum_chrome_version": "120",
   "background": {

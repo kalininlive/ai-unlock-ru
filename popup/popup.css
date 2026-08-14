@@ -219,6 +219,11 @@ input:checked + .slider:before {
   margin-top: 8px;
 }
 
+.ru-proxy-block {
+  padding-top: 4px;
+  border-top: 1px solid var(--glass-border);
+}
+
 .service-actions {
   display: flex;
   align-items: center;

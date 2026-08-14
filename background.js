@@ -1,8 +1,7 @@
 import { loadState, saveState } from './lib/storage.js';
 import { applyProxy, registerAuthListener } from './lib/proxy.js';
 import { setIconState } from './lib/icon.js';
-import { buildPacScript } from './lib/pac.js';
-import { RU_CATEGORIES } from './lib/ru-domains.js';
+import { buildPacScript, collectDomains, collectRuBypass, hasRuProxy } from './lib/pac.js';
 
 // 1. Auth listener
 registerAuthListener();
@@ -68,7 +67,9 @@ async function refreshTabIcon(tabId, state) {
     await setIconState(tabId, 'off');
     return;
   }
-  if (!state.proxy || !state.proxy.host) {
+
+  const pac = buildPacScript(state);
+  if (!pac) {
     await setIconState(tabId, 'error', { reason: 'not configured' });
     return;
   }
@@ -82,13 +83,12 @@ async function refreshTabIcon(tabId, state) {
   const host = new URL(tab.url).hostname;
 
   // RU-services bypass takes priority in the UI too: it's what actually wins in the PAC.
-  if (isHostRuBypassed(host, state)) {
-    await setIconState(tabId, 'ruDirect', { host });
+  if (matchesList(host, collectRuBypass(state))) {
+    await setIconState(tabId, 'ruDirect', { host, viaRuProxy: hasRuProxy(state) });
     return;
   }
 
-  const isRouted = isHostRouted(host, state);
-  if (isRouted) {
+  if (state.proxy && state.proxy.host && matchesList(host, collectDomains(state))) {
     await setIconState(tabId, 'routed', {
       host,
       country: state.proxy.lastTest?.country,
@@ -99,56 +99,15 @@ async function refreshTabIcon(tabId, state) {
   }
 }
 
-function isHostRouted(host, state) {
-  const pac = buildPacScript(state);
-  if (!pac) return false;
-
-  const presets = state.presets || {};
-  for (const [key, p] of Object.entries(presets)) {
-    if (!p.enabled) continue;
-    for (const d of p.domains || []) {
-      if (host === d || host.endsWith('.' + d)) return true;
-    }
+function matchesList(host, { suffixes, wildcards, exacts }) {
+  for (const d of suffixes) {
+    if (host === d || host.endsWith('.' + d)) return true;
   }
-
-  for (const e of state.customDomains || []) {
-    const v = e.value;
-    if (e.mode === 'wildcard') {
-      if (host !== v && host.endsWith('.' + v)) return true;
-    } else if (e.mode === 'exact') {
-      if (host === v) return true;
-    } else {
-      if (host === v || host.endsWith('.' + v)) return true;
-    }
+  for (const w of wildcards) {
+    if (host !== w && host.endsWith('.' + w)) return true;
   }
-  return false;
-}
-
-function isHostRuBypassed(host, state) {
-  const pac = buildPacScript(state);
-  if (!pac) return false;
-
-  const rb = state.ruBypass || {};
-  if (rb.enabled === false) return false;
-  const categories = rb.categories || {};
-
-  for (const cat of RU_CATEGORIES) {
-    if (categories[cat.id] === false) continue;
-    for (const d of cat.domains) {
-      if (host === d || host.endsWith('.' + d)) return true;
-    }
-  }
-
-  for (const e of state.customRuDomains || []) {
-    if (e.enabled === false) continue;
-    const v = e.value;
-    if (e.mode === 'wildcard') {
-      if (host !== v && host.endsWith('.' + v)) return true;
-    } else if (e.mode === 'exact') {
-      if (host === v) return true;
-    } else {
-      if (host === v || host.endsWith('.' + v)) return true;
-    }
+  for (const e of exacts) {
+    if (host === e) return true;
   }
   return false;
 }
